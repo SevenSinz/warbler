@@ -20,6 +20,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -28,7 +30,11 @@ connect_db(app)
 ##############################################################################
 # User signup/login/logout
 
-
+# Registers a function to run before each request.
+# The function will be called without any arguments. 
+# If the function returns a non-None value, 
+# it’s handled as if it was the return value from the view 
+# and further request handling is stopped.
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -78,7 +84,7 @@ def signup():
             db.session.commit()
 
         except IntegrityError as e:
-            flash("Username already taken", 'danger')
+            flash("Username and/or email already taken", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -113,8 +119,10 @@ def login():
 def logout():
     """Handle logout of user."""
 
-    # IMPLEMENT THIS
-
+    do_logout()
+    flash("Successfully logged out!", "danger")
+    return redirect('/login')
+ 
 
 ##############################################################################
 # General user routes:
@@ -156,7 +164,8 @@ def users_show(user_id):
 @app.route('/users/<int:user_id>/following')
 def show_following(user_id):
     """Show list of people this user is following."""
-
+    
+    # if session doesn't have a valid curr_user:
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -222,8 +231,10 @@ def delete_user():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
+    # delete session:
     do_logout()
 
+    # delete user from db
     db.session.delete(g.user)
     db.session.commit()
 
@@ -286,7 +297,6 @@ def messages_destroy(message_id):
 @app.route('/')
 def homepage():
     """Show homepage:
-
     - anon users: no messages
     - logged in: 100 most recent messages of followees
     """

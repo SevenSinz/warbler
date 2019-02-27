@@ -74,6 +74,8 @@ class User(db.Model):
 
     messages = db.relationship('Message', backref='user')
 
+    #  calling relationship for User class, on User class, since each user has 
+    # (M:1) followers and (M:1) followees
     followers = db.relationship(
         "User",
         secondary="follows",
@@ -99,7 +101,6 @@ class User(db.Model):
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
-
         Hashes password and adds user to system.
         """
 
