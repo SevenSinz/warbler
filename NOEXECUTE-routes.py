@@ -1,3 +1,6 @@
+# non-executable code
+# keeping track of routes
+
 @app.before_request
 def add_user_to_g():
 
