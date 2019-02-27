@@ -226,22 +226,36 @@ def profile():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    form = EditProfileForm(username = g.user.username, email = g.user.email, image_url = g.user.image_url, password=g.user.password)
+    form = EditProfileForm(username = g.user.username, 
+                           email = g.user.email,
+                           image_url = g.user.image_url,
+                           password=g.user.password,
+                           bio=g.user.bio,
+                           location=g.user.location)
 
-#     if form.validate_on_submit():
+    if form.validate_on_submit():
+        user=User.authenticate(form.username.data, form.password.data)
+
+        user.username = form.username.data
+        user.email = form.email.data
+        user.image_url = form.image_url.data
+        user.bio = form.bio.data
+        user.location = form.location.data
+
+        #The consequence of having the line below this comment is setting a new plain text
+        #non-hashed password into the database
+        #Will yield an error of "invalid Salt" because the password is now 123456 in plain text
+        #Python is looking for $b2$12$...(start of encrypted salt key) beginning to the hashed password
+        # user.password = form.password.data
         
-        # bio = 
-        # location = 
-        # # password = PasswordField('Password', validators=[Length(min=6)])
-       
-        # header_image_url = 
-
-# msg = Message(text=form.text.data)
-#         g.user.messages.append(msg)
-#         db.session.commit()
-
-#         return redirect(f"/users/edit")
-
+        
+        if not user:
+            flash('Invalid Password!', 'danger')
+            return redirect('/')
+        else:
+            db.session.commit()
+            return redirect(f'/users/{g.user.id}')
+        
     return render_template('/users/edit.html', form=form)
 
 
