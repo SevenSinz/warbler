@@ -52,12 +52,16 @@
               <p>{{ msg.text }}</p>
 
                 {% if g.user in msg.user_likes %}
-                    <form action="/{{ msg.id }}", method="Post">
-                        <button class='like'><i class="far fa-thumbs-up"></i></button> 
+                    <form action="/like-unlike", method="Post">
+                      <input type="hidden" name="redirect_to" value="{{redirect_to}}">
+                      <input type="hidden" name="message_id" value="{{ msg.id }}">
+                        <button class='like'><i class="fas fa-thumbs-up"></i></button> 
                     </form>
                 {% else %}
-                    <form action="/{{ msg.id }}", method="Post">
-                        <button class='like'><i class="fas fa-thumbs-up"></i></button> 
+                    <form action="/like-unlike", method="Post">
+                      <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
+                      <input type="hidden" name="message_id" value="{{ msg.id }}">
+                        <button class='like'><i class="far fa-thumbs-up"></i></button> 
                     </form>
                 {% endif %}
             </div>

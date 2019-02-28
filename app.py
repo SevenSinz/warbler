@@ -189,6 +189,18 @@ def users_followers(user_id):
     return render_template('users/followers.html', user=user)
 
 
+@app.route('/users/<int:user_id>/likes')
+def users_likes(user_id):
+    """Show list of messages that the user likes."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/likes.html', user=user)
+
+
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
 def add_follow(follow_id):
     """Add a follow for the currently-logged-in user."""
@@ -348,15 +360,16 @@ def homepage():
                     .limit(100)
                     .all())
        
-        return render_template('home.html', messages=messages, user=g.user)
+        return render_template('home.html', messages=messages, user=g.user, redirect_to='/')
 
     else:
         return render_template('home-anon.html')
 
-@app.route('/<int:message_id>', methods=['POST'])
-def like_unlike(message_id):
+@app.route('/like-unlike', methods=['POST'])
+def like_unlike():
+    redirect_to= request.form.get('redirect_to')
+    message_id= request.form.get('message_id')
 
-    # form = LikeForm()
     like = db.session.query(Like).filter(Like.user_id==g.user.id, Like.message_id==message_id).first()
     
     if not like:
@@ -369,7 +382,7 @@ def like_unlike(message_id):
         db.session.delete(like)
         db.session.commit()
 
-    return redirect('/')
+    return redirect(f"/{redirect_to}")
 
 
 ##############################################################################
