@@ -338,16 +338,9 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followees
     """
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/signup")
-
-    # if g.user.following == None:
-    #     g.user.following = g
-
-    following_ids = [u.id for u in g.user.following]  
 
     if g.user:
+        following_ids = [u.id for u in g.user.following]  
         messages = (Message
                     .query
                     .filter(or_(Message.user_id == g.user.id, 
@@ -361,20 +354,21 @@ def homepage():
     else:
         return render_template('home-anon.html')
 
-# @app.route('/likeunlike', methods=["POST"])
-# def like_unlike():
+# @app.route('/<int:message_id>/<user_id>', methods=["POST"])
+# def like_unlike(message_id, user_id):
 
 #     if not g.user:
 #         flash("Access unauthorized.", "danger")
 #         return redirect("/")
 
-#     form = LikeForm()
+#     # form = LikeForm()
 
-#     like= 
+#     like.user_id = user_id
+#     like.message_id = message_id 
 
-#         return redirect(f"/users/{g.user.id}")
+#     db.session.commit()
 
-#     return render_template('messages/new.html', form=form)
+#     return render_template('home.html', form=form)
 
 
 ##############################################################################

@@ -515,6 +515,14 @@ p.card-bio {
   margin-bottom: 10px;
 }
 
+.float {
+  float: left;
+  font-weight: bold;
+  width: auto;
+  /* border: 2px dotted black; */
+  padding: 10px;
+}
+
 /* ================================ 404 page */
 
 .message-404 {
