@@ -109,7 +109,7 @@ class User(db.Model):
     
     def is_liking(self, a_message):
         """Does this user like the message"""
-
+        
         found_user_likes = [msg for msg in self.liked_messages if msg == a_message]
         return len(found_user_likes) == 1     
 

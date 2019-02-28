@@ -50,7 +50,8 @@
               <a href="/users/{{ msg.user.id }}">@{{ msg.user.username }}</a>
               <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
               <p>{{ msg.text }}</p>
-
+              
+              {% if g.user.id != msg.user_id %}
                 {% if g.user.is_liking(msg) %}
                     <form action="/like-unlike", method="Post">
                       <input type="hidden" name="redirect_to" value="{{redirect_to}}">
@@ -64,6 +65,7 @@
                         <button class='like'><i class="far fa-thumbs-up"></i></button> 
                     </form>
                 {% endif %}
+              {% endif %}
             </div>
             
           </li>

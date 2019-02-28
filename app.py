@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from sqlalchemy.testing import in_
-from forms import UserAddForm, LoginForm, MessageForm, EditProfileForm
+from forms import UserAddForm, LoginForm, MessageForm, EditProfileForm, LikeForm
 from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
@@ -261,12 +261,8 @@ def profile():
         # Python is looking for $b2$12$...(start of encrypted salt key) 
         # and can't find salt key, hence the error "invalid Salt"
         
-        if not user:
-            flash('Invalid Password!', 'danger')
-            return redirect('/')
-        else:
-            db.session.commit()
-            return redirect(f'/users/{g.user.id}')
+        # db.session.commit()
+        # return redirect(f'/users/{g.user.id}')
         
     return render_template('/users/edit.html', form=form)
 
@@ -348,6 +344,7 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followees
     """
+    form = LikeForm()
 
     if g.user:
         following_ids = [u.id for u in g.user.following]  
@@ -359,17 +356,18 @@ def homepage():
                     .limit(100)
                     .all())
        
-        return render_template('home.html', messages=messages, user=g.user, redirect_to='/')
+        return render_template('home.html', messages=messages, user=g.user, form = form, redirect_to='/')
 
     else:
         return render_template('home-anon.html')
 
 @app.route('/like-unlike', methods=['POST'])
 def like_unlike():
-    
-    redirect_to= request.form.get('redirect_to')
-    message_id= request.form.get('message_id')
+    """" handles like/unlike logic, when called by clicking on the icon"""
+    # form = LikeForm()
+    message_id = request.form.get('message_id')
 
+    # if form.validate_on_submit():
     like = db.session.query(Like).filter(Like.user_id==g.user.id, Like.message_id==message_id).first()
     
     if not like:
@@ -382,7 +380,7 @@ def like_unlike():
         db.session.delete(like)
         db.session.commit()
         
-    return redirect(f"{redirect_to}")
+    return redirect(request.form.get('redirect_to'))
 
 
 ##############################################################################

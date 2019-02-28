@@ -16,8 +16,8 @@
             <a href="/users/{{ user.id }}">@{{ user.username }}</a>
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ message.text }}</p>
-            
-            
+            <!-- first if is to make sure we don't show like/unlike to user on their own messages
+            the second one is to handle the unlike action for the "likes" page  -->
             {% if g.user.id != message.user_id %}
               {% if g.user.is_liking(message) %}
                 <form action="/like-unlike", method="Post">
