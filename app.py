@@ -197,7 +197,7 @@ def users_likes(user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     user = User.query.get_or_404(user_id)
-    return render_template('users/likes.html', user=user, redirect_to='/users/<int:user_id>/likes')
+    return render_template('users/likes.html', user=user, redirect_to=f'/users/{user.id}/likes')
 
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
@@ -381,7 +381,7 @@ def like_unlike():
         db.session.delete(like)
         db.session.commit()
         
-    return redirect(f"/{redirect_to}")
+    return redirect(f"{redirect_to}")
 
 
 ##############################################################################
