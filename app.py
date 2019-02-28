@@ -48,13 +48,13 @@ def add_user_to_g():
 
 
 def do_login(user):
-    """Log in user."""
+    """Log in user, by adding CURR_USER_KEY to the session."""
 
     session[CURR_USER_KEY] = user.id
 
 
 def do_logout():
-    """Logout user."""
+    """Logout user, by deleting session."""
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
@@ -227,9 +227,9 @@ def profile():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    form = EditProfileForm(username = g.user.username, 
-                           email = g.user.email,
-                           image_url = g.user.image_url,
+    form = EditProfileForm(username=g.user.username, 
+                           email=g.user.email,
+                           image_url=g.user.image_url,
                            password=g.user.password,
                            bio=g.user.bio,
                            location=g.user.location)
@@ -243,12 +243,12 @@ def profile():
         user.bio = form.bio.data
         user.location = form.location.data
 
-        #The consequence of having the line below this comment is setting a new plain text
-        #non-hashed password into the database
-        #Will yield an error of "invalid Salt" because the password is now 123456 in plain text
-        #Python is looking for $b2$12$...(start of encrypted salt key) beginning to the hashed password
-        # user.password = form.password.data
-        
+        # The consequence of having 
+        #### user.password = form.password.data ####
+        # is setting a new plain text non-hashed password into the database
+        # the password is now 123456 in plain text
+        # Python is looking for $b2$12$...(start of encrypted salt key) 
+        # and can't find salt key, hence the error "invalid Salt"
         
         if not user:
             flash('Invalid Password!', 'danger')
@@ -268,10 +268,8 @@ def delete_user():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    # delete session:
     do_logout()
 
-    # delete user from db
     db.session.delete(g.user)
     db.session.commit()
 
