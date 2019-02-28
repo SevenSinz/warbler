@@ -161,7 +161,7 @@ def users_show(user_id):
                 .order_by(Message.timestamp.desc())
                 .limit(100)
                 .all())
-    return render_template('users/show.html', user=user, messages=messages)
+    return render_template('users/show.html', user=user, messages=messages, redirect_to=f"/users/{user.id}")
 
 
 @app.route('/users/<int:user_id>/following')
@@ -366,6 +366,7 @@ def homepage():
 
 @app.route('/like-unlike', methods=['POST'])
 def like_unlike():
+    
     redirect_to= request.form.get('redirect_to')
     message_id= request.form.get('message_id')
 
