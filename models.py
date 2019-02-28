@@ -72,7 +72,14 @@ class User(db.Model):
         nullable=False,
     )
 
+    #  relationship between messages and users throug 
     messages = db.relationship('Message', backref='user')
+
+    # relationship between messages and users throug likes model
+    liked_messages = db.relationship(
+        "Message",
+        secondary="likes",
+        backref="user_likes")
 
     #  calling relationship for User class, on User class, since each user has 
     # (M:1) followers and (M:1) followees
@@ -164,6 +171,24 @@ class Message(db.Model):
         nullable=False,
     )
 
+
+
+class Like(db.Model):
+    """to keep track of messages a user has liked"""
+
+    __tablename__ = 'likes'
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+
+    message_id = db.Column(
+        db.Integer,
+        db.ForeignKey('messages.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
 
 def connect_db(app):
     """Connect this database to provided Flask app.

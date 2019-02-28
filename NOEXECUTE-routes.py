@@ -94,3 +94,40 @@ def homepage():
 @app.after_request
 def add_header(req):
     """Add non-caching headers on every request."""
+
+
+
+#############################################
+#############################################
+#############################################
+
+Where do we see other peoples messages?
+
+
+home.html        
+users/show.html
+messages/show.html
+
+
+@app.route('/messages/<int:message_id>', methods=["GET"])
+def messages_show(message_id):
+    """Show a message."""
+    return render_template('messages/show.html', message=msg)
+
+
+@app.route('/users/<int:user_id>')
+def users_show(user_id):
+    """Show user profile."""
+    return render_template('users/show.html', user=user, messages=messages)
+
+@app.route('/')
+def homepage():
+    """Show homepage:
+    - anon users: no messages
+    - logged in: 100 most recent messages of followees
+    """ 
+        return render_template('home.html', messages=messages)
+
+    else:
+        return render_template('home-anon.html')    
+

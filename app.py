@@ -6,7 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from sqlalchemy.testing import in_
 from forms import UserAddForm, LoginForm, MessageForm, EditProfileForm
-from models import db, connect_db, User, Message
+# , LikeForm
+from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
 
@@ -313,12 +314,14 @@ def messages_show(message_id):
 @app.route('/messages/<int:message_id>/delete', methods=["POST"])
 def messages_destroy(message_id):
     """Delete a message."""
+    msg = Message.query.get(message_id)
 
-    if not g.user:
+    # making sure a user cannot delete messages posted by another user
+    if not g.user or g.user.id != msg.user_id:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    msg = Message.query.get(message_id)
+
     db.session.delete(msg)
     db.session.commit()
 
@@ -335,7 +338,12 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followees
     """
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/signup")
 
+    # if g.user.following == None:
+    #     g.user.following = g
 
     following_ids = [u.id for u in g.user.following]  
 
@@ -348,10 +356,25 @@ def homepage():
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages)
+        return render_template('home.html', messages=messages, user=g.user)
 
     else:
         return render_template('home-anon.html')
+
+# @app.route('/likeunlike', methods=["POST"])
+# def like_unlike():
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     form = LikeForm()
+
+#     like= 
+
+#         return redirect(f"/users/{g.user.id}")
+
+#     return render_template('messages/new.html', form=form)
 
 
 ##############################################################################
