@@ -107,6 +107,13 @@ class User(db.Model):
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
     
+    def is_liking(self, a_message):
+        """Does this user like the message"""
+
+        found_user_likes = [msg for msg in self.liked_messages if msg == a_message]
+        return len(found_user_likes) == 1     
+
+
 
     ############ USER Class Methoods ###################
     @classmethod

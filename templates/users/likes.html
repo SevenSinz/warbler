@@ -4,7 +4,7 @@
   <div class="col-sm-9">
     <div class="row">
 
-      {% for msg in user.liked_messages %}
+      {% for msg in g.user.liked_messages %}
 
         <div class="col-lg-4 col-md-6 col-12">
           <div class="card user-card">
@@ -17,14 +17,19 @@
                   <img src="{{ msg.user.image_url }}" alt="Image for {{ msg.user.username }}" class="card-image">
                   <p>@{{ msg.user.username }}</p>
                 </a>
-                {% if g.user in msg.user_likes %}
-                    <form action="/{{ msg.id }}", method="Post">
-                        <button class='like'><i class="fas fa-thumbs-up"></i></button> 
+
+
+                {% if g.user.is_liking(msg.user) %}
+                    <form action="/like-unlike", method="Post">
+                      <input type="hidden" name="redirect_to" value="{{redirect_to}}">
+                      <input type="hidden" name="message_id" value="{{ msg.id }}">
+                      <button class='like'><i class="fas fa-thumbs-up"></i></button> 
                     </form>
-                    
                 {% else %}
-                    <form action="/{{ msg.id }}", method="Post">
-                        <button class='like'><i class="far fa-thumbs-up"></i></button> 
+                    <form action="/like-unlike", method="Post">
+                      <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
+                      <input type="hidden" name="message_id" value="{{ msg.id }}">
+                      <button class='like'><i class="far fa-thumbs-up"></i></button> 
                     </form>
                 {% endif %}
 
@@ -40,7 +45,7 @@
                 {% endif %}
 
               </div>
-              <p class="card-bio">Bio: {{ msg.user.bio }}</p>
+              <p class="card-bio">{{ msg.text }}</p>
             </div>
           </div>
         </div>

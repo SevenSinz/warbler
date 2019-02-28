@@ -196,9 +196,8 @@ def users_likes(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
     user = User.query.get_or_404(user_id)
-    return render_template('users/likes.html', user=user)
+    return render_template('users/likes.html', user=user, redirect_to='/users/<int:user_id>/likes')
 
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
@@ -381,7 +380,7 @@ def like_unlike():
     else:
         db.session.delete(like)
         db.session.commit()
-
+        
     return redirect(f"/{redirect_to}")
 
 
