@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from sqlalchemy.testing import in_
-from forms import UserAddForm, LoginForm, MessageForm, EditProfileForm, LikeForm
+from forms import UserAddForm, LoginForm, MessageForm, EditProfileForm
 from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
@@ -347,14 +347,8 @@ def homepage():
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
-        # if Like.query.get(user_id= , message_id= )  ==  
-        # liked = db.session.query(Like).filter(user_id=g.user.id, message_id=) !=None:
-        #   liked = <i class="far fa-thumbs-up">
-        # else:
-        #   liked = <i class="fas fa-thumbs-up">
-
+       
         return render_template('home.html', messages=messages, user=g.user)
-        # , liked=liked)
 
     else:
         return render_template('home-anon.html')
@@ -362,7 +356,7 @@ def homepage():
 @app.route('/<int:message_id>', methods=['POST'])
 def like_unlike(message_id):
 
-    form = LikeForm()
+    # form = LikeForm()
     like = db.session.query(Like).filter(Like.user_id==g.user.id, Like.message_id==message_id).first()
     
     if not like:
