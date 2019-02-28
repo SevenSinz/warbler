@@ -72,6 +72,7 @@ class User(db.Model):
         nullable=False,
     )
 
+    ############ USER RELATIONSHIPS ###################
     #  relationship between messages and users throug 
     messages = db.relationship('Message', backref='user')
 
@@ -90,6 +91,7 @@ class User(db.Model):
         secondaryjoin=(FollowersFollowee.followee_id == id),
         backref="following")
 
+    ############ USER Instance Methoods ###################
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
@@ -104,7 +106,9 @@ class User(db.Model):
 
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
+    
 
+    ############ USER Class Methoods ###################
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
@@ -144,6 +148,8 @@ class User(db.Model):
         return False
 
 
+
+##############################
 class Message(db.Model):
     """An individual message ("warble")."""
 
@@ -172,7 +178,7 @@ class Message(db.Model):
     )
 
 
-
+##############################
 class Like(db.Model):
     """to keep track of messages a user has liked"""
 
@@ -188,7 +194,10 @@ class Like(db.Model):
         db.Integer,
         db.ForeignKey('messages.id', ondelete='CASCADE'),
         primary_key=True,
-    )
+    ) 
+
+
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.

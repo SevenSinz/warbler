@@ -291,6 +291,13 @@ nav + .container {
   word-wrap: break-word;
 }
 
+.like{
+  position: relative;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
 @media (max-width: 768px) {
   .full-width .user-stats .stat {
     display: none;
