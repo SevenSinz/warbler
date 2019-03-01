@@ -71,3 +71,8 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+
+        def test_view_all_message(self):
+            '''Test to see all quantity of messages'''
+            
+        

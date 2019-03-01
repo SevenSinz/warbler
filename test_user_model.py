@@ -121,10 +121,6 @@ class UserModelTestCase(TestCase):
     def test_user_signup(self):
         """Does User.signup successfully create a new user given valid credentials?"""    
 
-        # user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
-        # db.session.add(user)
-        # db.session.commit()
-
         self.assertTrue(self._user1.username=='testuser1')
         self.assertTrue(self._user1.email=='test1@test.com')
         self.assertTrue(self._user1.authenticate('testuser1', 'HASHED_PASSWORD'))

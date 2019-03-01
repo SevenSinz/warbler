@@ -261,8 +261,8 @@ def profile():
         # Python is looking for $b2$12$...(start of encrypted salt key) 
         # and can't find salt key, hence the error "invalid Salt"
         
-        # db.session.commit()
-        # return redirect(f'/users/{g.user.id}')
+        db.session.commit()
+        return redirect(f'/users/{g.user.id}')
         
     return render_template('/users/edit.html', form=form)
 
