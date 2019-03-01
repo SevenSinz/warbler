@@ -135,39 +135,33 @@ class MessageViewTestCase(TestCase):
                 sess[CURR_USER_KEY] = self.testuser.id
 
             resp_post = c.post("/messages/new", data={"text": "Hello"})
-            # import pdb; pdb.set_trace()
             u = User.query.get(self.testuser_id)
             msg_id = u.messages[0].id
             resp_get = c.get(f'/messages/{msg_id}')
 
             self.assertIn(b'class="single-message">Hello</p>',resp_get.data)
             self.assertIn(b'class="btn btn-outline-danger">Delete</button>',resp_get.data)
-            
-            # self.assertIn(b'id="message_count" value="2"',resp_get.data)        
-
-            
-
-
-
 
 
     # #POST Delete messages and check for display and count
     # def test_delete_message(self):
     #     '''test to see if messages are deleted and count reflects the delete'''
-    #     with self.client as c:
+    #      with self.client as c:
     #         with c.session_transaction() as sess:
     #             sess[CURR_USER_KEY] = self.testuser.id
 
-    #         resp_post = c.post("/messages/new", data={"text": "Hello"})
-    #         resp_post = c.post("/messages/new", data={"text": "Hi"})
-
-    #         resp_get = c.get(f'/users/{self.testuser.id}')
-
-    #         self.assertIn(b'<p>Hello</p>',resp_get.data)
-    #         self.assertIn(b'<p>Hi</p>',resp_get.data)
+    #         u = User.query.get(self.testuser_id)
+    #         msg_id = u.messages[0].id
+    #         resp_post = c.post(f"/messages/{msg_id}/delete")
+    #         self.assertEqual(resp_post.status_code, 302)
             
-    #         self.assertIn(b'id="message_count" value="2"',resp_get.data)        
+    #         resp_get = c.get(f'/messages/{msg_id}')
+
+    #         self.assertIn(b'class="single-message">Hello</p>',resp_get.data)
+    #         self.assertIn(b'class="btn btn-outline-danger">Delete</button>',resp_get.data)
+
 
             
 
-        
+    #         resp_post = c.post(f"/users/{g.user.id}")
+    #         resp_post_redirected = c.post(f"/users/{g.user.id}", follow_redirects=True)
