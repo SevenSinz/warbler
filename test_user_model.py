@@ -154,7 +154,9 @@ class UserModelTestCase(TestCase):
     def test_user_signup_uniqueness(self):
         """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
 
-        # trying to create a new user with missing email
+        # trying to create a new user with missing email, however, we can't test this on user.signup, because the errror
+        # happens when User instance is missing email and cannot be created. So we have to test it on User instance, 
+        # if something is missing
         user_missing_email = User(username='uname', password='123456', image_url='/static/images/image.png')
         db.session.add(user_missing_email)
 
