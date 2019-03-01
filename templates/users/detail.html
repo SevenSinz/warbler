@@ -12,7 +12,7 @@
           <li class="stat">
             <p class="small">Messages</p>
             <h4>
-              <a href="/users/{{ user.id }}">{{ user.messages | length }}</a>
+              <a href="/users/{{ user.id }}" id="message_count" value="{{ g.user.messages | length }}">{{ user.messages | length }}</a>
             </h4>
           </li>
           <li class="stat">

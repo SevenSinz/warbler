@@ -49,11 +49,43 @@ class MessageViewTestCase(TestCase):
                                     password="testuser",
                                     image_url=None)
 
+
         db.session.commit()
 
-    def test_add_message(self):
-        """Can use add a message?"""
+        self.testuser_id = self.testuser.id
 
+    
+    def test_unauthorized_user(self):
+        ''' Can unauthorize access /messages/new route'''
+        # we can rewrite the same test for all routes to make sure unauthorized users
+        # dont have access
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = 5
+       
+            resp_get = c.get("/messages/new")
+            resp_get_redirected = c.get("/messages/new", follow_redirects=True)
+            
+            # Make sure it redirects
+            self.assertEqual(resp_get.status_code, 302)
+            self.assertIn(b'Access unauthorized.', resp_get_redirected.data)
+       
+            resp_post = c.post("/messages/new")
+            resp_post_redirected = c.post("/messages/new", follow_redirects=True)
+
+            # Make sure it redirects
+            self.assertEqual(resp_post.status_code, 302)
+            self.assertIn(b'Access unauthorized.', resp_post_redirected.data)
+
+
+#######################################################
+        
+        
+    # GET/POST to endpoint return valid response
+    def test_add_message(self):
+        """Can user add a message?"""
+        
         # Since we need to change the session to mimic logging in,
         # we need to use the changing-session trick:
 
@@ -61,18 +93,81 @@ class MessageViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser.id
 
-            # Now, that session setting is saved, so we can have
-            # the rest of ours test
+            # get
+            resp_get = c.get("/messages/new")
+            self.assertEqual(resp_get.status_code, 200)
+            self.assertIn(b'new-message-form', resp_get.data)
 
-            resp = c.post("/messages/new", data={"text": "Hello"})
-
-            # Make sure it redirects
-            self.assertEqual(resp.status_code, 302)
+            # post
+            resp_post = c.post("/messages/new", data={"text": "Hello"})
+            self.assertEqual(resp_post.status_code, 302)
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
 
-        def test_view_all_message(self):
-            '''Test to see all quantity of messages'''
+
+    #POST new messages and check for display and count
+    def test_show_own_message(self):
+        '''test to see if the messages posted are displayed'''
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            resp_post = c.post("/messages/new", data={"text": "Hello"})
+            resp_post = c.post("/messages/new", data={"text": "Hi"})
+
+            resp_get = c.get(f'/users/{self.testuser.id}')
+
+            self.assertIn(b'<p>Hello</p>',resp_get.data)
+            self.assertIn(b'<p>Hi</p>',resp_get.data)
             
+            self.assertIn(b'id="message_count" value="2"',resp_get.data)
+
+
+    #POST Delete messages and check for display and count
+    def test_view_message(self):
+        '''test to see if a message is clicked it shows separately'''
+        
+        # self.testuser_id = self.testuser.id
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            resp_post = c.post("/messages/new", data={"text": "Hello"})
+            # import pdb; pdb.set_trace()
+            u = User.query.get(self.testuser_id)
+            msg_id = u.messages[0].id
+            resp_get = c.get(f'/messages/{msg_id}')
+
+            self.assertIn(b'class="single-message">Hello</p>',resp_get.data)
+            self.assertIn(b'class="btn btn-outline-danger">Delete</button>',resp_get.data)
+            
+            # self.assertIn(b'id="message_count" value="2"',resp_get.data)        
+
+            
+
+
+
+
+
+    # #POST Delete messages and check for display and count
+    # def test_delete_message(self):
+    #     '''test to see if messages are deleted and count reflects the delete'''
+    #     with self.client as c:
+    #         with c.session_transaction() as sess:
+    #             sess[CURR_USER_KEY] = self.testuser.id
+
+    #         resp_post = c.post("/messages/new", data={"text": "Hello"})
+    #         resp_post = c.post("/messages/new", data={"text": "Hi"})
+
+    #         resp_get = c.get(f'/users/{self.testuser.id}')
+
+    #         self.assertIn(b'<p>Hello</p>',resp_get.data)
+    #         self.assertIn(b'<p>Hi</p>',resp_get.data)
+            
+    #         self.assertIn(b'id="message_count" value="2"',resp_get.data)        
+
+            
+
         

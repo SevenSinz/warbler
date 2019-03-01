@@ -227,7 +227,7 @@ def stop_following(follow_id):
     g.user.following.remove(followee)
     db.session.commit()
 
-    return redirect(f"/users/{g.user.id}/following")
+    return redirect("/users")
 
 
 @app.route('/users/profile', methods=["GET", "POST"])

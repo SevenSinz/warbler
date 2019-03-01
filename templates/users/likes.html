@@ -17,7 +17,7 @@
                   <img src="{{ msg.user.image_url }}" alt="Image for {{ msg.user.username }}" class="card-image">
                   <p>@{{ msg.user.username }}</p>
                 </a>
-                <!-- show like/unlike -->
+
                 {% if g.user.is_liking(msg) %}
                     <form action="/like-unlike", method="Post">
                       <input type="hidden" name="redirect_to" value="{{redirect_to}}">
@@ -33,7 +33,7 @@
                     </form>
                 {% endif %}
                 
-                <!-- show follow/unfollow -->
+ 
                 {% if g.user.is_following(msg.user) %}
                   <form method="POST"
                         action="/users/stop-following/{{ msg.user.id }}">
