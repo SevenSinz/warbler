@@ -46,8 +46,8 @@ class UserModelTestCase(TestCase):
         Like.query.delete()
 
         self.client = app.test_client()
-
-        hashed_pwd = bcrypt.generate_password_hash("HASHED_PASSWORD").decode('UTF-8')
+        password="HASHED_PASSWORD"
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
         self._user1 = User(
             id=1000,
@@ -60,7 +60,8 @@ class UserModelTestCase(TestCase):
             id=2000,
             email="test2@test.com",
             username="testuser2",
-            password="HASHED_PASSWORD"
+            password=hashed_pwd,
+            image_url="/static/images/image.png"
         )
         
         db.session.add(self._user1)
@@ -120,39 +121,43 @@ class UserModelTestCase(TestCase):
     def test_user_signup(self):
         """Does User.signup successfully create a new user given valid credentials?"""    
 
-        user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
-        db.session.add(user)
-        db.session.commit()
+        # user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
+        # db.session.add(user)
+        # db.session.commit()
 
-        self.assertTrue(user.username=='uname')
-        self.assertTrue(user.email=='email@email.com')
-        self.assertTrue(user.authenticate('uname', '123456'))
-        self.assertTrue(user.image_url=='/static/images/image.png')
+        self.assertTrue(self._user1.username=='testuser1')
+        self.assertTrue(self._user1.email=='test1@test.com')
+        self.assertTrue(self._user1.authenticate('testuser1', 'HASHED_PASSWORD'))
+        
+        # User.signup successfully replaces default image for -user1, since they didn't supply a picture 
+        self.assertTrue(self._user1.image_url=='/static/images/default-pic.png')
+        
+        # User.signup successfully retrieves the correct image_url for _user2 
+        self.assertTrue(self._user2.image_url=='/static/images/image.png')
 
-    def test_default_image(self):
-        """Does User.signup successfully create a new user with default image, given no image?"""   
 
-        user_with_image = User.signup(username='uname2', email='email2@email.com', password='123456', image_url='')
-        db.session.add(user_with_image)
-        db.session.commit()
+    # check with form error message
+    def test_user_username_uniqueness(self):
+        """creating a new user with the same username must raise IntegrityError"""
 
-        self.assertTrue(user_with_image.image_url=='/static/images/default-pic.png')
-
-# check with form error message
-    def test_user_signup_uniqueness(self):
-        """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
-
-        # trying to create a new user with the same username/email
-        user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
-        user_not_unique = User.signup(username='uname', email='emaillll@email.com', password='123456', image_url='/static/images/image.png')
-        db.session.add(user)
-        db.session.add(user_not_unique)
+        user_not_unique_username = User.signup(username='testuser1', email='email@email.com', password='123456', image_url='/static/images/image.png')
+        db.session.add(user_not_unique_username)
 
         self.assertRaises(IntegrityError, db.session.commit)
         db.session.rollback()
+    
+    
+    def test_user_email_uniqueness(self):
+        """creating a new user with the same email must raise IntegrityError"""
+    
+        user_not_unique_password = User.signup(username='uname', email='test1@test.com', password='123456', image_url='/static/images/image.png')
+        db.session.add(user_not_unique_password)
         
-    def test_user_signup_uniqueness(self):
-        """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
+        self.assertRaises(IntegrityError, db.session.commit)
+        db.session.rollback()
+
+    def test_user_missing_email(self):
+        """Does User.create fail to create a new user if non-nullable fields are missing?"""    
 
         # trying to create a new user with missing email, however, we can't test this on user.signup, because the errror
         # happens when User instance is missing email and cannot be created. So we have to test it on User instance, 
