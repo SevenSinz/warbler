@@ -139,25 +139,28 @@ class UserModelTestCase(TestCase):
         self.assertTrue(user_with_image.image_url=='/static/images/default-pic.png')
 
 # check with form error message
-    # def test_user_signup_uniqueness(self):
-    #     """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
+    def test_user_signup_uniqueness(self):
+        """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
 
-    #     # trying to create a new user with the same username/email
-    #     user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
-    #     user_not_unique = User.signup(username='uname', email='emaillll@email.com', password='123456', image_url='/static/images/image.png')
-    #     db.session.add(user)
-    #     db.session.add(user_not_unique)
+        # trying to create a new user with the same username/email
+        user = User.signup(username='uname', email='email@email.com', password='123456', image_url='/static/images/image.png')
+        user_not_unique = User.signup(username='uname', email='emaillll@email.com', password='123456', image_url='/static/images/image.png')
+        db.session.add(user)
+        db.session.add(user_not_unique)
 
-    #     self.assertRaises(IntegrityError, db.session.commit)
-    #     db.session.rollback()
+        self.assertRaises(IntegrityError, db.session.commit)
+        db.session.rollback()
         
+    def test_user_signup_uniqueness(self):
+        """Does User.create fail to create a new user if any of the validations (e.g. uniqueness, non-nullable fields) fail?"""    
 
-    #     # trying to create a new user with missing email
-    #     user_missing_email = User.signup(username='uname', email='', password='123456', image_url='/static/images/image.png')
-    #     db.session.add(user_missing_email)
+        # trying to create a new user with missing email
+        user_missing_email = User(username='uname', password='123456', image_url='/static/images/image.png')
+        db.session.add(user_missing_email)
 
-    #     self.assertRaises(IntegrityError, db.session.commit)
-    #     db.session.rollback()
+        self.assertRaises(IntegrityError, db.session.commit)
+        db.session.rollback()
+
         
     def test_user_authenticate_correct(self):
         """Does User.authenticate successfully return a user when given a valid username and password?"""
