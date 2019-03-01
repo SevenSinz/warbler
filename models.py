@@ -128,7 +128,7 @@ class User(db.Model):
             username=username,
             email=email,
             password=hashed_pwd,
-            image_url=image_url,
+            image_url=image_url or None,
         )
 
         db.session.add(user)
