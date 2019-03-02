@@ -276,7 +276,8 @@ def delete_user():
         return redirect("/")
 
     do_logout()
-
+    
+    msgs = Message.query.filter(Message.user_id==g.user.id).delete()
     db.session.delete(g.user)
     db.session.commit()
 
